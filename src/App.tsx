@@ -58,6 +58,7 @@ const App: React.FC = () => {
             q: values.address,
             format: "jsonv2",
             countrycodes: "vn", // Chỉ giới hạn tìm kiếm tại Việt Nam
+            "accept-language": "vi", // BẮT BUỘC: Ép API trả về định dạng tiếng Việt chuẩn xác nhất
             limit: 1, // Lấy kết quả khớp nhất
           },
         },
@@ -95,6 +96,16 @@ const App: React.FC = () => {
     message.success(
       <span>
         Đã lưu vào khay nhớ tạm! <CheckOutlined />
+      </span>,
+    );
+  };
+
+  const copyBothToClipboard = (lat: string, lon: string) => {
+    const combinedText = `${lat}, ${lon}`;
+    navigator.clipboard.writeText(combinedText);
+    message.success(
+      <span>
+        Đã sao chép cả hai: {combinedText} <CheckOutlined />
       </span>,
     );
   };
@@ -235,6 +246,7 @@ const App: React.FC = () => {
                         fontWeight: 600,
                         marginTop: "4px",
                         color: "#333",
+                        lineHeight: 1.5,
                       }}
                     >
                       {result.display_name}
@@ -304,6 +316,44 @@ const App: React.FC = () => {
                     </Col>
                   </Row>
 
+                  {/* Nút copy chung cả 2 tọa độ */}
+                  <Button
+                    type="dashed"
+                    block
+                    icon={<CopyOutlined />}
+                    onClick={() => copyBothToClipboard(result.lat, result.lon)}
+                    style={{
+                      borderRadius: "12px",
+                      borderColor: "#FF6B6B",
+                      color: "#FF6B6B",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Sao chép cả Vĩ độ và Kinh độ
+                  </Button>
+
+                  {/* Bản đồ Google Maps nhúng */}
+                  <div
+                    style={{
+                      marginTop: "8px",
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                      border: "1px solid #FFE3E3",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                    }}
+                  >
+                    <iframe
+                      width="100%"
+                      height="250"
+                      style={{ border: 0, display: "block" }}
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                      src={`https://maps.google.com/maps?q=${result.lat},${result.lon}&hl=vi&z=16&output=embed`}
+                      title="Google Maps"
+                    ></iframe>
+                  </div>
+
                   <Button
                     block
                     style={{
@@ -319,7 +369,7 @@ const App: React.FC = () => {
                     rel="noopener noreferrer"
                   >
                     <Space>
-                      <GlobalOutlined /> Mở trên Google Maps
+                      <GlobalOutlined /> Mở toàn màn hình trên Google Maps
                     </Space>
                   </Button>
                 </Space>
